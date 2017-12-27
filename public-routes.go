@@ -1,38 +1,70 @@
-package appHttp
+
+package http
 
 import (
-	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"github.com/cnvrtly/dstore/gae"
-	"github.com/cnvrtly/adaptr"
 	"github.com/cnvrtly/dstore"
+	"github.com/cnvrtly/adaptr"
+	"google.golang.org/appengine"
 )
-
-const publicApiKey = "apiKY"
-
-var nativeApiKeys []string = []string{publicApiKey}
 
 var memService dstore.SaverRetriever = &gae.MemcacheStoreService{}
 var datastoreService dstore.SaverRetriever = &gae.DatastoreStoreService{}
 
-const apiBasePublic string = "" // "/api/v1"
 // const appDomainName string = "messenger.appspot.com"
 
-var handlers = newHandlers(gaeCtx())
+func publicLifecycleAdaptrsGETTest(testEnv bool) *RequestLifecycleAdapters {
+	var initGAECtxAdaptrs =[]adaptr.Adapter{initAdaptr}
+	if !testEnv{
+		var gaeCtxAdaptr = adaptr.PlatformXCtxAdapter(appengine.NewContext)
+		initGAECtxAdaptrs=append(initGAECtxAdaptrs, gaeCtxAdaptr)
+	}
+	var preJSONAuthRequestAdaptrs = append(
+		initGAECtxAdaptrs,
+	)
+	return &RequestLifecycleAdapters{PreHandler:preJSONAuthRequestAdaptrs, PostHandler:nil}
+}
 
-func GetRouter() *httprouter.Router {
 
-	router := httprouter.New()
-	//STATIC FILES START
+func GetRouterPUBLIC(router *httprouter.Router) *httprouter.Router {
+
+	router.GET(apiBasePublic+"/test", publicTestGET(publicLifecycleAdaptrsGETTest(false)))
+	//router.POST(apiBasePublic+"/test/:id", testGET())
+	//router.OPTIONS(apiBasePublic+"/test", adaptr.CreateOptionsRouterHandle(adaptr.Cors("")))
+
+	//router.GET(apiBasePublic+"/xconfig", apiHandlers.backendApiAdaptersGET() )
+
+	//http.Handle("/", router)
+	return router
+}
+
+
+func publicTestGET(lifecycleAdapters *RequestLifecycleAdapters) httprouter.Handle {
+	return adaptr.WrapHandleFuncAdapters(
+		emptyHandler,
+		[]adaptr.Adapter{
+			adaptr.WriteResponse(`backend wrks :)`),
+		},
+		lifecycleAdapters.PreHandler,
+		lifecycleAdapters.PostHandler,
+	)
+}
+
+	/*//STATIC FILES START
 	router.GET("/static/*filepath", handlers.staticFilesHandle())
-	/*fileServer := http.FileServer(http.Dir("static"))
+	*/
+/*fileServer := http.FileServer(http.Dir("static"))
 	router.GET("/static/*filepath", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		*//*w.Header().Set("Vary", "Accept-Encoding")
+		*//*
+/*w.Header().Set("Vary", "Accept-Encoding")
 		w.Header().Set("Cache-Control", "public, max-age=7776000")*//*
+/*
 		r.URL.Path = p.ByName("filepath")
 		//log.Debugf(r.Context(), "OOOOOOOOOOOOOFFF")
 		fileServer.ServeHTTP(w, r)
-	})*/
+	})*//*
+
 	//STATIC FILES END
 
 	router.GET(apiBasePublic+"/test", handlers.frontendApiAdaptersGET() )
@@ -80,7 +112,18 @@ func (h *handlrs) frontendApiAdaptersGET() httprouter.Handle {
 		append(
 			[]adaptr.Adapter{
 				AuthPermitAll(),
-				WriteResponse(`wrks :)`),
+				WriteResponse(`frontend wrks :)`),
+			},
+			h.frontendApiAdapters...
+		))
+}
+
+func (h *handlrs) backendApiAdaptersGET() httprouter.Handle {
+	return h.newRouteHandle(emptyHandler,
+		append(
+			[]adaptr.Adapter{
+				AuthPermitAll(),
+				WriteResponse(`backend wrks :)`),
 			},
 			h.frontendApiAdapters...
 		))
@@ -127,3 +170,4 @@ func newHandlers(gaeCtxAdapter adaptr.Adapter) *handlrs {
 	}
 	return &handlrs{initAdapter: initServerAdaptr, frontendApiAdapters: frontendApiAdapters, gaeCtxAdapter: gaeCtxAdapter}
 }
+*/

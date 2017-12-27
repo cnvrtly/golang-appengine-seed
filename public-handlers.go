@@ -1,4 +1,4 @@
-package appHttp
+package http
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 )
 
 func someJsonHandler(w http.ResponseWriter, r *http.Request) {
-	ctxVal := adaptr.GetCtxValue(r, requestJsonStructCtxKey).(map[string]interface{})
+	ctxVal := adaptr.GetCtxValue(r, adaptr.CtxRequestJsonStructKey).(map[string]interface{})
 	jsonVal:= ctxVal["testVal"].(string)
 
 	retJson, err := json.Marshal(map[string]string{"value": jsonVal})
