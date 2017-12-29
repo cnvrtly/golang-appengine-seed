@@ -2,12 +2,12 @@ package http
 
 import (
 	"testing"
-	"fmt"
 	"net/http/httptest"
 	"strings"
 	"net/http"
 	"google.golang.org/appengine/aetest"
 	"context"
+	"fmt"
 )
 
 func TestXConfigPathApiHandlers(t *testing.T) {
@@ -64,19 +64,26 @@ func tXConfigPathPOST(t *testing.T, ctx context.Context) {
 	record := httptest.NewRecorder()
 
 	r, err := http.NewRequest("POST", "/xConfigPath", strings.NewReader(jsonXCPath))
+	r.Header.Add("Authorization", "Bearer eyJhGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJOYW1lIjoiYXV0aG9yaXp6ZXIuY29tLS4tNTYzOTQ0NTYwNDcyODgzMi5fLnRlc3QxIiwiUGVybWlzc2lvbnMiOnsiIjpbIioiXX0sIkV4dFRrbkNhY2hlSWQiOiJmYWNlYm9va8KnMjU2ODUzNDgxNDk0OTMwwqc1MDgyNjIxMjYxOTk0NzciLCJFeHRJc3N1ZXIiOiJmYWNlYm9vayIsIkV4dFN1YmplY3QiOiIyNTY4NTM0ODE0OTQ5MzAiLCJFeHRUa25BdWRpZW5jZSI6IjUwODI2MjEyNjE5OTQ3NyIsIkV4dEV4cGlyZXNBdCI6MTUxNDUxNjQwMCwiYXVkIjoiYXV0aG9yaXp6ZXIuY29tLS4tNTYzOTQ0NTYwNDcyODgzMi5fLnRlc3QxLS4tNTY0OTM5MTY3NTI0NDU0NC5fLiIsImV4cCI6MTUxNDUxNDMzOCwianRpIjoiMTUxNDUxMDczOMKnwqdhdXRob3Jpenplci5jb20tLi01NjM5NDQ1NjA0NzI4ODMyLl8udGVzdDEiLCJpYXQiOjE1MTQ1MTA3MzgsImlzcyI6ImF1dGhvcml6emVyLmNvbS0uLTU2Mzk0NDU2MDQ3Mjg4MzIuXy50ZXN0MSIsIm5iZiI6MTUxNDUxMDczOCwic3ViIjoiYXV0aG9yaXp6ZXIuY29tLS4tNTYzOTQ0NTYwNDcyODgzMi5fLnRlc3QxLS4tNTY0OTM5MTY3NTI0NDU0NCJ9.y2o39cJ6V0RM4hjPw0ytVzEH4BQDk1DxELIlOVdYeHA")
 	if err != nil {
 		t.Errorf("req err=%s", err.Error())
 	}
 	r = r.WithContext(ctx)
 
-	fmt.Println(record)
 	xConfigPathPOST(apiLifecycleAdaptrsPOST(true))(record, r, nil)
 	if record.Code != 200 {
-		t.Errorf("post req not OK resp=%v", record.Body.String())
+		t.Errorf("POST ERR=%v", record.Body.String())
 	}
-	if record.Body.String() != "okkk" {
+
+	fmt.Println("post response=%v", record.Body.String())
+	//TODO check if auth bouncer is working
+
+	//TODO get namespace from token + check if namespace matches apiKey
+
+
+	/*if record.Body.String() != "check response" {
 		t.Errorf("post response not OK body=%v", record.Body.String())
-	}
+	}*/
 
 	//t.Errorf("STATUS=%v body=%v", record.Code, record.Body)
 
