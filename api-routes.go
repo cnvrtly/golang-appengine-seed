@@ -45,6 +45,9 @@ func getTokenValidatorAdapter(testEnv bool) adaptr.Adapter {
 	if testEnv {
 		tokenValidatorAdapter = func(h http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				//wrks, _:=authorizzr_client.ParseWorkspaceIdentString(adaptr.GetCtxValue(r, adaptr.CtxTokenAudienceKey).(string))
+				wrks := adaptr.GetCtxValue(r, adaptr.CtxWorkspaceIdentObjKey)
+				log.Debugf(r.Context(), "TKN wrksp ident=%+v", wrks)
 				h.ServeHTTP(w, r)
 			})
 		}
@@ -62,7 +65,7 @@ func apiLifecycleAdaptrsPOST(testEnv bool) *RequestLifecycleAdapters {
 		initGAECtxAdaptrs,
 		adaptr.Json2Ctx(adaptr.CtxRequestJsonStructKey, false),
 		adaptr.Tkn2Ctx(adaptr.CtxTokenKey, "", adaptr.CtxRequestJsonStructKey),
-		authorizzr_client.UserIdentAndAudience2Ctx(adaptr.CtxTokenKey, adaptr.CtxTokenUserIdentKey, adaptr.CtxTokenAudienceKey),
+		authorizzr_client.WorkspaceIdent2Ctx(adaptr.CtxTokenKey, adaptr.CtxWorkspaceIdentObjKey, adaptr.CtxTokenUserIdentKey),
 		tokenValidatorAdapter,
 		adaptr.JsonContentType(),
 	)
