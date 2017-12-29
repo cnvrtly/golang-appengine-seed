@@ -9,6 +9,7 @@ import (
 	"github.com/cnvrtly/dstore"
 	"github.com/cnvrtly/dstore/gae"
 	"cnv_xconfig"
+	"google.golang.org/appengine/log"
 )
 
 const apiBasePublic string = "/api/v1"
@@ -61,6 +62,7 @@ func apiLifecycleAdaptrsPOST(testEnv bool) *RequestLifecycleAdapters {
 		initGAECtxAdaptrs,
 		adaptr.Json2Ctx(adaptr.CtxRequestJsonStructKey, false),
 		adaptr.Tkn2Ctx(adaptr.CtxTokenKey, "", adaptr.CtxRequestJsonStructKey),
+		authorizzr_client.UserIdentAndAudience2Ctx(adaptr.CtxTokenKey, adaptr.CtxTokenUserIdentKey, adaptr.CtxTokenAudienceKey),
 		tokenValidatorAdapter,
 		adaptr.JsonContentType(),
 	)
