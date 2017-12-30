@@ -9,7 +9,6 @@ import (
 	"github.com/cnvrtly/dstore"
 	"github.com/cnvrtly/dstore/gae"
 	"cnv_xconfig"
-	"google.golang.org/appengine/log"
 )
 
 const apiBasePublic string = "/api/v1"
@@ -45,9 +44,6 @@ func getTokenValidatorAdapter(testEnv bool) adaptr.Adapter {
 	if testEnv {
 		tokenValidatorAdapter = func(h http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//wrks, _:=authorizzr_client.ParseWorkspaceIdentString(adaptr.GetCtxValue(r, adaptr.CtxTokenAudienceKey).(string))
-				wrks := adaptr.GetCtxValue(r, adaptr.CtxWorkspaceIdentObjKey)
-				log.Debugf(r.Context(), "TKN wrksp ident=%+v", wrks)
 				h.ServeHTTP(w, r)
 			})
 		}
@@ -102,27 +98,3 @@ func SetupAPIRoutes(router *httprouter.Router) *httprouter.Router {
 /*func newRouteHandleStatic(hFn http.HandlerFunc) httprouter.Handle {
 	return adaptr.HttprouterAdaptFn(hFn, httpRouterUrlParamsKey)
 }*/
-
-func xConfigPathPOST(lifecycleAdapters *RequestLifecycleAdapters) httprouter.Handle {
-	return adaptr.WrapHandleFuncAdapters(
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("ok POST"))
-		},
-		[]adaptr.Adapter{
-			adaptr.AuthPermitAll(nil),
-			//adaptr.WriteResponse(`backend wrks :)`),
-		},
-		lifecycleAdapters.PreHandler,
-		lifecycleAdapters.PostHandler,
-	)
-}
-func testGET(lifecycleAdapters *RequestLifecycleAdapters) httprouter.Handle {
-	return adaptr.WrapHandleFuncAdapters(
-		emptyHandler,
-		[]adaptr.Adapter{
-			adaptr.WriteResponse(`backend wrks :)`),
-		},
-		lifecycleAdapters.PreHandler,
-		lifecycleAdapters.PostHandler,
-	)
-}
