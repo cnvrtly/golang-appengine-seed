@@ -5,21 +5,14 @@ import (
 	"github.com/cnvrtly/adaptr"
 )
 
-const ctxAppNamespaceIdKey = ctxAppNamespaceKeyType("appNamespaceID")
+/*const ctxAppNamespaceIdKey = ctxAppNamespaceKeyType("appNamespaceID")
 
 type ctxAppNamespaceKeyType string
 
 const ctxApiKeyKey = ctxApiKeyKeyType("ctxApiKeyKey")
 
-type ctxApiKeyKeyType string
+type ctxApiKeyKeyType string*/
 
-const ctxTokenUserIdentKey = ctxTokenUserIdentType("tokenUserIdent")
-
-type ctxTokenUserIdentType string
-
-const ctxTokenAudienceKey = tokenAudienceCtxType("tokenAudience")
-
-type tokenAudienceCtxType string
 
 /*
 const requestJsonStructCtxKey = requestJsonStructType("reqJsonStruct")

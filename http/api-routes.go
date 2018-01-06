@@ -36,6 +36,7 @@ func initGAEAdapters(testEnv bool) []adaptr.Adapter {
 		gaeCtxAdaptr := adaptr.PlatformXCtxAdapter(appengine.NewContext)
 		return append(initGAECtxAdaptrs, gaeCtxAdaptr)
 	}
+
 	return initGAECtxAdaptrs
 }
 func getTokenValidatorAdapter(testEnv bool) adaptr.Adapter {
@@ -60,6 +61,7 @@ func apiLifecycleAdaptrsPOST(testEnv bool) *RequestLifecycleAdapters {
 	preJSONAuthRequestAdaptrs := append(
 		initGAECtxAdaptrs,
 		adaptr.Json2Ctx(adaptr.CtxRequestJsonStructKey, false),
+		adaptr.ParamId2Ctx(adaptr.CtxRequestIdParamKey),
 		adaptr.Tkn2Ctx(adaptr.CtxTokenKey, "", adaptr.CtxRequestJsonStructKey),
 		authorizzr_client.WorkspaceIdent2Ctx(adaptr.CtxTokenKey, adaptr.CtxWorkspaceIdentObjKey, adaptr.CtxTokenUserIdentKey),
 		tokenValidatorAdapter,
@@ -91,6 +93,9 @@ func SetupAPIRoutes(router *httprouter.Router) *httprouter.Router {
 	//router.GET(apiBasePublic+"/xconfig", apiHandlers.backendApiAdaptersGET() )
 
 	router.POST(apiBasePublic+"/xConfigPath", xConfigPathPOST(postReqAdapters))
+	router.GET(apiBasePublic+"/xConfigPath", xConfigPathGET(postReqAdapters))
+	router.GET(apiBasePublic+"/xConfigPath/:id", xConfigPathGET(postReqAdapters))
+	router.DELETE(apiBasePublic+"/xConfigPath/:id", xConfigPathDELETE(postReqAdapters))
 	//http.Handle("/", router)
 	return router
 }
